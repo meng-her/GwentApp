@@ -4,111 +4,171 @@
     ViewBag.Title = "BoardView";
     //Player player = TempData["tempPlayer"] as Player;
     Player player = Session[Model.PlayerGuid.ToString()] as Player;
-    string cardsInCloseRow = "";
-    string cardsInRangedRow = "";
-    string cardsInSiegeRow = "";
-    foreach (Card cc in player.PlayerBoardState.CloseCombat)
-    {
-        cardsInCloseRow += "|";
-        cardsInCloseRow += cc.Name;
-    }
-    foreach (Card rc in player.PlayerBoardState.RangedCombat)
-    {
-        cardsInRangedRow += "|";
-        cardsInRangedRow += rc.Name;
-    }
-    foreach (Card sc in player.PlayerBoardState.SiegeCombat)
-    {
-        cardsInSiegeRow += "|";
-        cardsInSiegeRow += sc.Name;
-    }
-}
 
-<h2>BoardView</h2>
-
-<table>
-    <tr>
-        <td>
-            @Html.Label("Round Number: ") @Html.DisplayFor(p => player.PlayerBoardState.RoundNumber)
-        </td>
-        <td>
-            @Html.Label("Win Count: ") @Html.DisplayFor(p => player.WinCount)
-        </td>
-    </tr>
-    <tr>
-        <td style="@(player.PlayerBoardState.IsSnowing ? " background-color:#00b4d2" : "")">
-        
-            @Html.DisplayFor(p => player.PlayerBoardState.CloseCombatTotal)
-        </td>
-        <td>
-            @Html.Label(cardsInCloseRow)
-        </td>
-    </tr>
-    <tr>
-        <td>
-            @Html.DisplayFor(p => player.PlayerBoardState.RangedCombatTotal)
-        </td>
-        <td>
-            @Html.Label(cardsInRangedRow)
-        </td>
-    </tr>
-    <tr>
-        <td>
-            @Html.DisplayFor(p => player.PlayerBoardState.SiegeCombatTotal)
-        </td>
-        <td>
-            @Html.Label(cardsInSiegeRow)
-        </td>
-    </tr>
     
-
-</table>
-@foreach (Card c in player.Hand)
-{
-    if (!(player.PlayerBoardState.Passed))
-    {
-        if (c.Name != "Commander's Horn")
-        {
-            <li style="@(c.Hero ? " background-color:#C27E3A" : "")">@Html.ActionLink(c.Name, "PlayCard", "Board", new { id = c.CardId }, null) | @Html.DisplayFor(p => c.Range) | @Html.DisplayFor(p => c.Power) | @Html.DisplayFor(p => c.Ability)</li>
-        }
-        else
-        {
-            <li>@Html.DisplayFor(p => c.Name) @Html.ActionLink("Close", "PlayCard", "Board", new { id = c.CardId, row = "Close" }, null) | @Html.ActionLink("Ranged", "PlayCard", "Board", new { id = c.CardId, row = "Ranged" }, null) | @Html.ActionLink("Siege", "PlayCard", "Board", new { id = c.CardId, row = "Siege" }, null)</li>
-        }
-    }
-    else
-    {
-        <li>@Html.DisplayFor(p => c.Name)</li>
-    }
+   
 }
-
-<span>
-    <br />
-    @if (!(player.PlayerBoardState.Passed))
-    {
-        @Html.ActionLink("Pass", "PlayerPass", "Board", new { id = "" }, null)
+<style>
+    .cardRow{
+            padding-bottom: 25px;
     }
-    else
-    {
-        @Html.Label("Round passed!");
+    .woodBackground{
+        background-image:url(@Url.Content("~/Content/Images/woodtexture.jpg"));
     }
-    &nbsp;|&nbsp;
-    @Html.ActionLink("Draw card (TESTING ONLY)", "DrawFromDeck", "Board", new { id = "" }, null)
-    &nbsp;|&nbsp;
-    @Html.ActionLink("Total Round", "RoundTotal", "Board", new { id = "" }, null)
-</span>
+   .total{
+        padding-top: 40px;
+        color:white;
+    }
+    .borderRow{
+    height: 200px;
+    border-bottom-style: solid;
+    border-width: 5px;
+    }
+    body{
+    background-color: grey;
+    }
 
-@*@using (@Html.BeginForm("PlayCard", "Board"))
-{
+</style>
+<div class="row" style="padding-top: 20px;">
+    <div class="col-sm-10" style="padding-left:75px;">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2>Played Cards</h2>
+            </div>
+            <div class="panel-body woodBackground">
+                <div class="row borderRow">
+                    <div class="col-sm-1">
+                        <h2 class="total">@Html.DisplayFor(p => player.PlayerBoardState.CloseCombatTotal)</h2>
+                    </div>
+                    <div class="col-sm-11 cardRow">
 
-    //@Html.DropDownListFor(m => m.SelectedFaction.FactionAbbr, Player.DdFactionList, "");
-    @Html.DisplayFor(p => p.SelectedFaction.FactionName)
+                        @foreach (Card cc in player.PlayerBoardState.CloseCombat)
+                        {
+                            <div class="col-sm-2">
+                                <img alt="@cc.Name" src="@Url.Content(cc.ImageFilePath)" width="100" height="175" />
+                            </div>
 
-    @Html.DropDownListFor(p => p.PlayerBoardState.PlayedCardId, cardDd, "")
+                        }
 
-    <input type="submit" value="Submit" />
-}*@
-@{ 
-    //TempData["tempPlayer"] = player;
-    Session[player.PlayerGuid.ToString()] = player;
-}
+                    </div>
+                </div>
+
+                <div class="row borderRow">
+                    <div class="col-sm-1">
+                        <h2 class="total">@Html.DisplayFor(p => player.PlayerBoardState.RangedCombatTotal)</h2>
+                    </div>
+                    <div class="col-sm-11 cardRow">
+                        @foreach (Card rc in player.PlayerBoardState.RangedCombat)
+                        {
+                            <div class="col-sm-2">
+                                <img alt="@rc.Name" src="@Url.Content(rc.ImageFilePath)" width="100" height="175" />
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="row borderRow">
+                    <div class="col-sm-1">
+                        <h2 class="total">@Html.DisplayFor(p => player.PlayerBoardState.SiegeCombatTotal)</h2>
+                    </div>
+                    <div class="col-sm-11 cardRow">
+                        @foreach (Card sc in player.PlayerBoardState.SiegeCombat)
+                        {
+                            <div class="col-sm-2">
+                                <img alt="@sc.Name" src="@Url.Content(sc.ImageFilePath)" width="100" height="175" />
+                            </div>
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2>Your Cards</h2>
+            </div>
+            <div class="panel-body woodBackground">
+                @foreach (Card c in player.Hand)
+                {
+
+
+                    if (!(player.PlayerBoardState.Passed))
+                    {
+                        if (c.Name != "Commander's Horn")
+                        {
+                            <div class="col-sm-2 cardRow">
+                                <a href="/Board/PlayCard/@c.CardId"><img alt="@c.Name" src="@Url.Content(c.ImageFilePath)" width="100" height="175" /></a><br>@Html.ActionLink("Play Card", "Board", "PlayerCard", new { id = c.CardId }, null)
+
+
+
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-sm-2 cardRow">
+                                <img alt="@c.Name" src="@Url.Content(c.ImageFilePath)" width="100" height="175" /><br> @Html.ActionLink("Close", "PlayCard", "Board", new { id = c.CardId, row = "Close" }, null) @Html.ActionLink("Ranged", "PlayCard", "Board", new { id = c.CardId, row = "Ranged" }, null) @Html.ActionLink("Siege", "PlayCard", "Board", new { id = c.CardId, row = "Siege" }, null)
+
+
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-sm-2 cardRow">
+                            <img alt="@c.Name" src="@Url.Content(c.ImageFilePath)" width="100" height="175" />
+                        </div>
+
+                    }
+                }
+            </div>
+        </div>
+
+        @*@using (@Html.BeginForm("PlayCard", "Board"))
+            {
+
+                //@Html.DropDownListFor(m => m.SelectedFaction.FactionAbbr, Player.DdFactionList, "");
+                @Html.DisplayFor(p => p.SelectedFaction.FactionName)
+
+                @Html.DropDownListFor(p => p.PlayerBoardState.PlayedCardId, cardDd, "")
+
+                <input type="submit" value="Submit" />
+            }*@
+        @{
+            //TempData["tempPlayer"] = player;
+            Session[player.PlayerGuid.ToString()] = player;
+        }
+
+
+    </div>
+    <div class="col-sm-2">
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <p><strong>Round Number: </strong>@Html.DisplayFor(p => player.PlayerBoardState.RoundNumber)</p>
+                <p><strong>Win Count: </strong>@Html.DisplayFor(p => player.WinCount)</p>
+                <span>
+                    <br />
+                    @if (!(player.PlayerBoardState.Passed))
+                    {
+                        <button type="button" class="btn btn-info" style="width:100%;">
+                            @Html.ActionLink("Pass", "PlayerPass", "Board", new { id = "" }, null)
+                        </button>
+                    }
+                    else
+                    {
+                        @Html.Label("Round passed!");
+                    }
+
+                    <button type="button" class="btn btn-danger" style="width:100%;">
+                        @Html.ActionLink("Draw card (TESTING ONLY)", "DrawFromDeck", "Board", new { id = "" }, null)
+                    </button>
+
+                    <button type="button" class="btn btn-success" style="width:100%;">
+                        @Html.ActionLink("Total Round", "RoundTotal", "Board", new { id = "" }, null)
+                    </button>
+                </span>
+            </div>
+        </div>
+
+
+    </div>
+</div>
